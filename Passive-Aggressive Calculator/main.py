@@ -68,3 +68,41 @@ def evalEquation(L):
         return math.tan(int1)
     elif operator.lower() == 'abs':
         return abs(int1)
+
+
+def response(equation, answer, aggression):
+    op = equation[1]
+    if aggression <= 20: #content
+        return None
+    elif aggression <= 40: #tolerant
+        if op == "abs":
+            return "You can just remove the minus sign."
+    elif aggression <= 60: #annoyed
+        if op == "abs":
+            return "Is it that difficult to remove a minus sign?"
+        elif op == "+" or 1 in equation:
+            return "Feeling adeventurous today, are we?"
+    elif aggression <= 80: #frustrated
+        if op == "abs":
+            return "It really isn't difficult to remove a minus sign."
+        elif op == "+" or opp == "-" or 1 in equation:
+            return "What is this? Kindergarden?"
+        elif equation[0] > 10**5:
+            return "Pretty big numbers you got there."
+    elif aggression <= 99: #almost breaking point
+        if op == "abs":
+            return "Do you know what absolute value means? It's easy. I frankly don't know why I need it as a button."
+        elif op == "+" or op == "-" or 1 in equation:
+            return "Look out, we got Albert fucking Einstein over here."
+        elif equation[0] > 10**5:
+            return "Whoa buddy. Are you sure you can handle numbers that big?"
+        elif op == "sin" or op == "cos" or op == "tan":
+            return "Ok nerd."
+        elif op == "/":
+            return "Ah yes division. Reminds me of your parents."
+        elif answer <= 10 and (op == "+" or op == "-"):
+            return "Have you tried counting it out on your fingers."
+        elif op == "*" and answer <= 144:
+            return "I see someone forgot their times tables."
+    else: #piiiiiiissssssssed
+        return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
