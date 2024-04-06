@@ -5,9 +5,6 @@ def calculate(s):
     result = evalEquation(listEquation)
     return result
 
-
-print(calculate('2 + 2'))
-
 def evalEquation(L):
     length = len(L)
     int1 = L[0]
