@@ -172,7 +172,22 @@ def drawCalc(app):
 
 def onMousePress(app, mouseX, mouseY):
     button = getButton(app, mouseX, mouseY)
-    print(button)
+    term = button
+    if button == '<-' and previousTerm != None:
+        app.equation = app.equation[:-len(previousTerm)]
+    elif button == '+-':
+        app.equation = app.equation[:-len(previousTerm)]
+        if app.previousTerm[0] != '-':
+            app.previousTerm = '-' + app.previousTerm
+        else:
+            app.previousTerm = app.previousTerm[1:]
+        app.equation += app.previousTerm
+        
+    else:
+        term = button.replace('^', '**')
+        app.equation += term
+        app.previousTerm = term
+    print(app.equation)
 
 def getButton(app, mX, mY):
     for i in range(len(app.buttonsPos)):
