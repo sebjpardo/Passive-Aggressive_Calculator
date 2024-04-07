@@ -140,10 +140,10 @@ def onAppStart(app):
     app.buttons = [
         ["sin", "cos", "tan", "^"],
         ["abs", "^2", "sqrt", "/"],
-        [7, 8, 9, "*"],
-        [4, 5, 6, "-"],
-        [1, 2, 3, "+"],
-        ["<-", 0, "+-", "="]
+        ['7', '8', '9', "*"],
+        ['4', '5', '6', "-"],
+        ['1', '2', '3', "+"],
+        ["<-", '0', "+-", "="]
         ]
     app.buttonsPos = []
     for row in range(len(app.buttons)):
@@ -174,23 +174,26 @@ def drawCalc(app):
 
 def onMousePress(app, mouseX, mouseY):
     button = getButton(app, mouseX, mouseY)
-    print(repr(button))
-    if button == '<-' and previousTerm != None:
-        app.equation = app.equation[:-len(previousTerm)]
+    if button == '<-' and app.previousTerm != None:
+        app.equation = app.equation[:-len(app.previousTerm)]
     elif button == '+-':
-        app.equation = app.equation[:-len(previousTerm)]
+        app.equation = app.equation[:-len(app.previousTerm)]
         if app.previousTerm[0] != '-':
             app.previousTerm = '-' + app.previousTerm
         else:
             app.previousTerm = app.previousTerm[1:]
-        app.equation += app.previousTerm + ' '
-        
+        app.equation += app.previousTerm
+    elif button == '=':
+        app.answer = calculate(app.equation)
+        app.equation = ''
     else:
         if not button.isdigit():
-            term = button.replace("^", "**")
+            term = button.replace('^', '**')
+            app.previousTerm += term
         else:
+            app.previousTerm = ''
             term = button
-        app.equation = app.equation + term + " "
+        app.equation = app.equation + term 
         app.previousTerm = term
     print(app.equation)
 
