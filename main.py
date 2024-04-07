@@ -2,11 +2,21 @@ from cmu_graphics import *
 import math
 import string
 
+from Equation import Equation
+
+def test_equation():
+    eq_strs = ['4 + 1', '4 / 1', '4 ** 2', '4 sin', '9 sqrt', '40 + 1', '40 + 40', '10000 sqrt']
+    for str in eq_strs:
+        eq_as_lst = getEquationParts(str)
+        eq1 = Equation(eq_as_lst)
+        print(eq1)
+
 #Super Awesome Calculator goes here
 
 def calculate(s):
     listEquation = getEquationParts(s)
     result = evalEquation(listEquation)
+    
     return result
 
 def getEquationParts(s):
@@ -205,4 +215,9 @@ def getButton(app, mX, mY):
         if x <= mX <= x + 60 and y <= mY <= y + 30:
             return app.buttons[i // 4][i % 4]
     return ''
-runApp()
+
+def main():
+    test_equation()
+    runApp()
+
+main()
