@@ -1,4 +1,5 @@
-from cmu_graphics import *
+from .gitignore import cmu_graphics
+
 import math
 import string
 
@@ -156,3 +157,6 @@ def drawCalc(app):
             tColor = "white" if isinstance(button, int) else "black"
             drawRect(x, y, 60, 30, fill = bColor)
             drawLabel(str(app.buttons[row][col]), x + 30, y + 15, fill = tColor, size = 16)
+
+# def main():
+
