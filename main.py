@@ -186,8 +186,11 @@ def onMousePress(app, mouseX, mouseY):
         app.equation += app.previousTerm + ' '
         
     else:
-        term = button.replace('^', '**'
-        app.equation = app.equation + term + ' '
+        if not button.isdigit():
+            term = button.replace("^", "**")
+        else:
+            term = button
+        app.equation = app.equation + term + " "
         app.previousTerm = term
     print(app.equation)
 
