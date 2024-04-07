@@ -1,6 +1,7 @@
 import math
 import string
 
+# Gets an equation's parts in list form
 def getEquationParts(s):
     operators = ['+', '-', '*', '/']
 
@@ -30,18 +31,7 @@ def getEquationParts(s):
 
     return parts
 
-print(getEquationParts("1 + 2 - 3 * 4 / 1234"))
-
-#Super Awesome Calculator goes here
-
-def calculate(s):
-    listEquation = turnToList(s)
-    result = evalEquation(listEquation)
-    return result
-
-
-print(calculate('2 + 2'))
-
+# Evaluates an equation in list form
 def evalEquation(L):
     length = len(L)
     int1 = L[0]
@@ -68,3 +58,8 @@ def evalEquation(L):
         return math.tan(int1)
     elif operator.lower() == 'abs':
         return abs(int1)
+
+def calculate(s):
+    listEquation = getEquationParts(s)
+    result = evalEquation(listEquation)
+    return result
