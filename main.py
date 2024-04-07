@@ -5,7 +5,7 @@ import string
 from Equation import Equation
 
 def test_equation():
-    eq_strs = ['4 + 1', '4 / 1', '4 ** 2', '4 sin', '9 sqrt', '40 + 1', '40 + 40', '10000 sqrt']
+    eq_strs = ['4 + 1', '4 / 1', '4 ** 2', 'sin 4', 'sqrt 9', '40 + 1', '40 + 40', 'sqrt 10000']
     for str in eq_strs:
         eq_as_lst = getEquationParts(str)
         eq1 = Equation(eq_as_lst)
@@ -69,6 +69,7 @@ def getEquationParts(s):
         s = rest
     if len(parts) == 2:
         parts = parts[::-1]
+    print(parts)
     return parts
 
 def evalEquation(L):
