@@ -139,6 +139,12 @@ def onAppStart(app):
         [1, 2, 3, "+"],
         ["<-", 0, "+-", "="]
         ]
+    app.buttonsPos = []
+    for row in range(len(app.buttons)):
+        for col in range(len(app.buttons[0])):
+            x = 50 + col * 80
+            y = 150 + row * 40
+            app.buttonsPos.append((x,y))
 
 def redrawAll(app):
     drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
@@ -156,3 +162,14 @@ def drawCalc(app):
             tColor = "white" if isinstance(button, int) else "black"
             drawRect(x, y, 60, 30, fill = bColor)
             drawLabel(str(app.buttons[row][col]), x + 30, y + 15, fill = tColor, size = 16)
+    
+
+def onMousePress(app, mouseX, mouseY):
+    button = getButton(app, mouseX, mouseY)
+    print(button)
+
+def getButton(app, mX, mY):
+    for i in range(len(app.buttonsPos)):
+        x, y = app.buttonsPos[i]
+        if x <= mX <= x + 60 and y <= mY <= y + 30:
+            return app.buttons[i // 4][i % 4]
