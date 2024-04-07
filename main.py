@@ -9,7 +9,6 @@ def test_equation():
     for str in eq_strs:
         eq_as_lst = getEquationParts(str)
         eq1 = Equation(eq_as_lst)
-        print(eq1)
 
 #Super Awesome Calculator goes here
 
@@ -136,7 +135,7 @@ def response(equation, answer, aggression):
             return "It really isn't difficult to remove a minus sign."
         elif op == "+" or op == "-" or 1 in equation:
             return "What is this? Kindergarden?"
-        elif equation[0] > 10**5:
+        elif isinstance(equation[0], int) and equation[0] > 10**5:
             return "Pretty big numbers you got there."
         elif answer >= 10**5:
             return "I'm not payed enough for this."
@@ -148,7 +147,7 @@ def response(equation, answer, aggression):
             return "Do you know what absolute value means? It's easy. I frankly don't know why I need it as a button."
         elif op == "+" or op == "-" or 1 in equation:
             return "Look out, we got Albert fucking Einstein over here."
-        elif equation[0] > 10**5:
+        elif isinstance(equation[0], int) and equation[0] > 10**5:
             return "Whoa buddy. Are you sure you can handle numbers that big?"
         elif op == "sin" or op == "cos" or op == "tan":
             return "Ok nerd."
@@ -166,9 +165,6 @@ def response(equation, answer, aggression):
             return "I'm so done."
     else: #piiiiiiissssssssed
         return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
-
-def regurgitate():
-    return "fuck off and die fuck off and die"
 
 def onAppStart(app):
     app.buttons = [
@@ -217,19 +213,16 @@ def za_griDIO(app):
     
     app.col_width = app.width/rows
     app.row_height = app.height/columns
-    print(app.col_width, app.row_height)
     app.force_down = app.row_height 
 
     app.cols = [app.col_width * i for i in range(columns)]
     app.rows = [app.row_height * i for i in range(rows)]
 
-    print(app.rows, app.cols)
-
 def scroll(app):
     app.scroll_steps = 0
     app.scroll_x = 0
 
-    app.scroll_x_increment = 4
+    app.scroll_x_increment = 8
 
 
 def redrawAll(app):
@@ -242,6 +235,8 @@ def redrawAll(app):
         draw_grid(app)
     if app.stress > 10:
         drawEyes(app)
+    if app.stress > 80:
+        drawLine(90, 25, 160, 25, lineWidth = 5)
     
 def drawEyes(app):
     drawCircle(30, 80, 20, fill = "white", border = "black", borderWidth = 5)
@@ -283,7 +278,6 @@ def drawCalc(app):
         
 
         true_x = app.col_width + app.col_width/4
-        print(app.scroll_x, response_length)
 
         draw = True
         if app.scroll_x < response_length:
@@ -359,7 +353,6 @@ def onMousePress(app, mouseX, mouseY):
             term = button
         app.equation = app.equation + term 
         if term.isdigit() and (app.previousTerm.isdigit() or app.previousTerm == ''):
-            print('Hi')
             app.previousTerm += term
         else:
             app.previousTerm = term
@@ -415,9 +408,9 @@ def onStep(app):
 def scroll_text(app):
     app.scroll_steps += 1
     if app.scroll_steps > 30 * 5: #step value times n seconds
-        if app.scroll_steps % 20 == 0:
+        if app.scroll_steps % 15 == 0 and app.response != None:
             app.scroll_x += app.scroll_x_increment
-            if app.scroll_x > 200:
+            if app.scroll_x > len(app.response) * 8:
                 app.scroll_x = 0
 
 def main():
