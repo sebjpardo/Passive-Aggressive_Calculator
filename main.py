@@ -74,6 +74,8 @@ def getEquationParts(s):
 def evalEquation(L):
     length = len(L)
     int1 = L[0]
+    if not isinstance(int1, int):
+        return 0
     if length >= 2:
         operator = L[1]
     if length == 3:
@@ -110,13 +112,14 @@ def response(equation, answer, aggression):
         op = None
     print(equation, answer, aggression)
     if aggression <= 20: #content
-        return regurgitate()
-        return None
+        return ""
     elif aggression <= 40: #tolerant
         if op == "abs":
             return "You can just remove the minus sign."
         elif op == None:
             return "Maybe try an actual equation..."
+        else:
+            "..."
     elif aggression <= 60: #annoyed
         if op == "abs":
             return "Is it that difficult to remove a minus sign?"
@@ -126,6 +129,8 @@ def response(equation, answer, aggression):
             return "I'm not payed enough for this."
         elif op == None:
             return "Do you know how to use a calculator?"
+        else:
+            return "..."
     elif aggression <= 80: #frustrated
         if op == "abs":
             return "It really isn't difficult to remove a minus sign."
@@ -137,6 +142,7 @@ def response(equation, answer, aggression):
             return "I'm not payed enough for this."
         elif op == None:
             return 'How hard is it to just type an equation!?'
+        return "..."
     elif aggression <= 99: #almost breaking point
         if op == "abs":
             return "Do you know what absolute value means? It's easy. I frankly don't know why I need it as a button."
@@ -156,6 +162,8 @@ def response(equation, answer, aggression):
             return "Just big and greedy..."
         elif op == None:
             return "Even a fucking kindergartener can use a calculator! WHy can't you?!?!"
+        else:
+            return "I'm so done."
     else: #piiiiiiissssssssed
         return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
 
@@ -232,6 +240,17 @@ def redrawAll(app):
     drawRect(0, 0, 25, app.height, fill = app.background_color) 
     if app.show_grid:
         draw_grid(app)
+    if app.stress > 10:
+        drawEyes(app)
+    
+def drawEyes(app):
+    drawCircle(30, 80, 20, fill = "white", border = "black", borderWidth = 5)
+    drawCircle(370, 80, 20, fill = "white", border = "black", borderWidth = 5)
+    drawCircle(30, 80, 10, fill = "black")
+    drawCircle(370, 80, 10, fill = "black")
+    angle = app.stress / 4
+    drawArc(30, 80, 40, 40, 0 - angle, 180, fill = "grey", border = "black", borderWidth = 5)
+    drawArc(370, 80, 40, 40, 0 + angle, 180, fill = "grey", border = "black", borderWidth = 5)
 
 def draw_background(app):
     drawRect(0, 0, app.width, app.height, fill = app.background_color)
@@ -254,6 +273,7 @@ def drawCalc(app):
             
             drawRect(x, app.force_down + y, 60, 30, fill = button_Color)
             drawLabel(str(app.buttons[row][col]), x + 30, app.force_down + y + 15, fill = text_Color, size = 16)
+    
 
     if app.response != None:
         
@@ -395,7 +415,8 @@ def scroll_text(app):
     if app.scroll_steps > 30 * 5: #step value times n seconds
         if app.scroll_steps % 20 == 0:
             app.scroll_x += app.scroll_x_increment
-            print(app.scroll_x)
+            if app.scroll_x > 200:
+                app.scroll_x = 0
 
 def main():
     test_equation()
