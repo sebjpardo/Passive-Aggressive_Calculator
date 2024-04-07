@@ -155,7 +155,7 @@ def response(equation, answer, aggression):
         elif answer >= 10**5:
             return "Just big and greedy..."
         elif op == None:
-            return "Even a fucking kindergartener can use a calculator! WHy can't you?!?!"
+            return "Even an actual kindergartener can use a calculator! WHy can't you?!?!"
     else: #piiiiiiissssssssed
         return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
 
