@@ -1,3 +1,4 @@
+from cmu_graphics import *
 import math
 import string
 
@@ -128,3 +129,30 @@ def response(equation, answer, aggression):
             return "I see someone forgot their times tables."
     else: #piiiiiiissssssssed
         return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
+
+def onAppStart(app):
+    app.buttons = [
+        ["sin", "cos", "tan", "^"],
+        ["abs", "^2", "sqrt", "/"],
+        [7, 8, 9, "*"],
+        [4, 5, 6, "-"],
+        [1, 2, 3, "+"],
+        ["<-", 0, "+-", "="]
+        ]
+
+def redrawAll(app):
+    drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
+    drawCalc(app)
+
+def drawCalc(app):
+    drawRect(25, 45, 350, 350, fill = "grey", border = "black", borderWidth = 5)
+    drawRect(50, 70, 300, 60, fill = "white", border = "black", borderWidth = 5)
+    for row in range(len(app.buttons)):
+        for col in range(len(app.buttons[0])):
+            x = 50 + col * 80
+            y = 150 + row * 40
+            button = app.buttons[row][col]
+            bColor = "black" if isinstance(button, int) else "white"
+            tColor = "white" if isinstance(button, int) else "black"
+            drawRect(x, y, 60, 30, fill = bColor)
+            drawLabel(str(app.buttons[row][col]), x + 30, y + 15, fill = tColor, size = 16)
