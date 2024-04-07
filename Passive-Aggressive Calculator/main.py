@@ -1,10 +1,37 @@
-#Super Awesome Calculator goes here
 import math
-def calculate(s):
-    listEquation = turnToList(s)
-    result = evalEquation(listEquation)
-    return result
+import string
 
+# Gets an equation's parts in list form
+def getEquationParts(s):
+    operators = ['+', '-', '*', '/']
+
+    parts = []  # Result
+    currentNumber = ''  # Build up a string of the current number being parsed
+    while len(s) > 0:
+        char, rest = s[0], s[1:]
+
+        if char in string.digits:
+            # Add to current number
+            currentNumber += char
+
+        elif char in operators:
+            # Push current number to result list
+            parts.append(int(currentNumber))
+
+            # Reset current number
+            currentNumber = ''
+
+            # Add operator to result
+            parts.append(char)
+
+        s = rest
+
+    # Add current number to result
+    parts.append(int(currentNumber))
+
+    return parts
+
+# Evaluates an equation in list form
 def evalEquation(L):
     length = len(L)
     int1 = L[0]
@@ -31,3 +58,8 @@ def evalEquation(L):
         return math.tan(int1)
     elif operator.lower() == 'abs':
         return abs(int1)
+
+def calculate(s):
+    listEquation = getEquationParts(s)
+    result = evalEquation(listEquation)
+    return result
