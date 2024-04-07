@@ -104,6 +104,8 @@ def evalEquation(L):
         return math.tan(int1)
     elif operator.lower() == 'abs':
         return abs(int1)
+    else:
+        return None
 
 def response(equation, answer, aggression):
     if len(equation) > 1:
@@ -112,11 +114,12 @@ def response(equation, answer, aggression):
         op = None
     print(equation, answer, aggression)
     if aggression <= 20: #content
-        return ""
+        if op == None or answer == None:
+            return "Maybe try an actual equation..."
     elif aggression <= 40: #tolerant
         if op == "abs":
             return "You can just remove the minus sign."
-        elif op == None:
+        elif op == None or answer == None:
             return "Maybe try an actual equation..."
         else:
             "..."
@@ -127,7 +130,7 @@ def response(equation, answer, aggression):
             return "Feeling adeventurous today, are we?"
         elif answer >= 10**5:
             return "I'm not payed enough for this."
-        elif op == None:
+        elif op == None or answer == 'None':
             return "Do you know how to use a calculator?"
         else:
             return "..."
@@ -140,7 +143,7 @@ def response(equation, answer, aggression):
             return "Pretty big numbers you got there."
         elif answer >= 10**5:
             return "I'm not payed enough for this."
-        elif op == None:
+        elif op == None or answer == None:
             return 'How hard is it to just type an equation!?'
         return "..."
     elif aggression <= 99: #almost breaking point
@@ -160,7 +163,7 @@ def response(equation, answer, aggression):
             return "I see someone forgot their times tables."
         elif answer >= 10**5:
             return "Just big and greedy..."
-        elif op == None:
+        elif op == None or answer == 'None':
             return "Even a fucking kindergartener can use a calculator! WHy can't you?!?!"
         else:
             return "I'm so done."
