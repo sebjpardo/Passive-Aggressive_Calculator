@@ -57,7 +57,8 @@ def getEquationParts(s):
                 currentOperator = ''
 
         s = rest
-
+    if len(parts) == 2:
+        parts = parts[::-1]
     return parts
 
 def evalEquation(L):
@@ -77,21 +78,18 @@ def evalEquation(L):
             return int1 / int2
         elif operator == '**' or operator == '^':
             return int1 ** int2
-    elif length == 2:
-        int1 = L[1]
-        operator = L[0]
-        if operator.lower() == 'sqrt':
-            if int1 < 0:
-                return None
-            return int1 ** 0.5
-        elif operator.lower() == 'sin':
-            return math.sin(int1)
-        elif operator.lower() == 'cos':
-            return math.cos(int1)
-        elif operator.lower() == 'tan':
-            return math.tan(int1)
-        elif operator.lower() == 'abs':
-            return abs(int1)
+    elif operator.lower() == 'sqrt':
+        if int1 < 0:
+           return None
+        return int1 ** 0.5
+    elif operator.lower() == 'sin':
+        return math.sin(int1)
+    elif operator.lower() == 'cos':
+        return math.cos(int1)
+    elif operator.lower() == 'tan':
+        return math.tan(int1)
+    elif operator.lower() == 'abs':
+        return abs(int1)
 
 def response(equation, answer, aggression):
     op = equation[1]
@@ -154,7 +152,7 @@ def onAppStart(app):
     app.equation = ''
     app.previousTerm = None
     app.parts = []
-    app.aggresionStuff = None
+    app.previousButton = None
 
 def redrawAll(app):
     drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
@@ -172,10 +170,13 @@ def drawCalc(app):
             tColor = "white" if isinstance(button, int) else "black"
             drawRect(x, y, 60, 30, fill = bColor)
             drawLabel(str(app.buttons[row][col]), x + 30, y + 15, fill = tColor, size = 16)
+    drawLabel(app.equation, 295, 100, size = 16, align = 'left')
     
 
 def onMousePress(app, mouseX, mouseY):
     button = getButton(app, mouseX, mouseY)
+    if app.previousButton == '=':
+        app.equation = ''
     if button == '<-' and app.previousTerm != None:
         app.equation = app.equation[:-len(app.previousTerm)]
     elif button == '+-':
@@ -188,8 +189,7 @@ def onMousePress(app, mouseX, mouseY):
     elif button == '=':
         app.answer = calculate(app.equation)
         app.parts = getEquationParts(app.equation)
-        app.aggressionStuff = Equation(app.parts)
-        app.equation = ''
+        app.equation = calculate(app.equation)
     elif button == 'clr':
         app.equation = ''
     else:
@@ -201,6 +201,7 @@ def onMousePress(app, mouseX, mouseY):
             term = button
         app.equation = app.equation + term 
         app.previousTerm = term
+    app.previousButton = button
 
 def getButton(app, mX, mY):
     for i in range(len(app.buttonsPos)):
