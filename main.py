@@ -183,6 +183,7 @@ def onAppStart(app):
     app.answer = None
     app.parts = []
     app.previousButton = None
+    app.previousKey = None
     
     colors(app)
     za_griDIO(app)
@@ -355,8 +356,33 @@ def onMouseRelease(app, mX, mY):
     app.pressed_button = None
 
 def onKeyPress(app, key):
+    if app.previousKey == '=' or app.previousKey == 'enter':
+        app.equation = ''
     if key == "g":
         app.show_grid = not app.show_grid
+    elif key == '=' or key == 'enter':
+        if app.equation != '':
+            app.answer = calculate(app.equation)
+            app.parts = getEquationParts(app.equation)
+            app.equation = calculate(app.equation)
+            parts_for_dict = str(app.parts)
+            fetch_response(app)
+        
+
+            if parts_for_dict in app.equations:
+                equation_object = app.equations[parts_for_dict]
+                equation_object.frequency += 1
+
+            else:
+                app.equations[parts_for_dict] = Equation(app.parts)
+                app.stress += app.equations[parts_for_dict].stress
+    elif key == 'backspace':
+        app.equation = app.equation[:-1]
+    elif key == 'space':
+        app.equation += ' '
+    else:
+        app.equation += key
+    app.previousKey = key
 
 def onStep(app):
     # print("call")
