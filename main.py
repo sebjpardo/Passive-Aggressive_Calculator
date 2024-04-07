@@ -104,7 +104,9 @@ def evalEquation(L):
 
 def response(equation, answer, aggression):
     op = equation[1]
+    print(equation, answer, aggression)
     if aggression <= 20: #content
+        return regurgitate()
         return None
     elif aggression <= 40: #tolerant
         if op == "abs":
@@ -145,6 +147,9 @@ def response(equation, answer, aggression):
     else: #piiiiiiissssssssed
         return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
 
+def regurgitate():
+    return "fuck off and die fuck off and die"
+
 def onAppStart(app):
     app.buttons = [
         ["clr", "abs", "sqrt", "^"],
@@ -160,32 +165,123 @@ def onAppStart(app):
             x = 50 + col * 80
             y = 150 + row * 40
             app.buttonsPos.append((x,y))
+    app.pressed_button = None
     app.equation = ''
     app.previousTerm = None
+    app.answer = None
     app.parts = []
     app.previousButton = None
+    
+    colors(app)
+    za_griDIO(app)
+    stress(app)
+    app.response = None
+    scroll(app)
+
+def stress(app):
+    app.stress = 0
+    app.equations = dict()
+
+def colors(app):
+    app.background_color = "beige"
+
+
+def za_griDIO(app):
+    app.show_grid = False
+    app.height = 600
+    
+    
+    rows = 8
+    columns = 8
+    
+    app.col_width = app.width/rows
+    app.row_height = app.height/columns
+    print(app.col_width, app.row_height)
+    app.force_down = app.row_height 
+
+    app.cols = [app.col_width * i for i in range(columns)]
+    app.rows = [app.row_height * i for i in range(rows)]
+
+    print(app.rows, app.cols)
+
+def scroll(app):
+    app.scroll_steps = 0
+    app.scroll_x = 0
+
+    app.scroll_x_increment = 4
+
 
 def redrawAll(app):
+    draw_background(app)
     drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
     drawCalc(app)
+    if app.show_grid:
+        draw_grid(app)
+
+def draw_background(app):
+    drawRect(0, 0, app.width, app.height, fill = app.background_color)
 
 def drawCalc(app):
-    drawRect(25, 45, 350, 350, fill = "grey", border = "black", borderWidth = 5)
-    drawRect(50, 70, 300, 60, fill = "white", border = "black", borderWidth = 5)
+    drawRect(25, app.force_down, app.col_width*7, app.row_height*5 + app.row_height/2, fill = "grey", border = "black", borderWidth = 5) # calc background
+    drawRect(50, app.force_down+ app.row_height/2, 300, app.row_height + app.row_height/8, fill = "white", border = "black", borderWidth = 5) # this is the display
     for row in range(len(app.buttons)):
         for col in range(len(app.buttons[0])):
             x = 50 + col * 80
             y = 150 + row * 40
             button = app.buttons[row][col]
-            bColor = "black" if isinstance(button, int) else "white"
-            tColor = "white" if isinstance(button, int) else "black"
-            drawRect(x, y, 60, 30, fill = bColor)
-            drawLabel(str(app.buttons[row][col]), x + 30, y + 15, fill = tColor, size = 16)
-    drawLabel(app.equation, 295, 100, size = 16, align = 'left')
-    
+                
+            button_Color = "black" if isinstance(button, int) else "white"
+
+            if button == app.pressed_button:
+                button_Color = "slateGray"
+
+            text_Color = "white" if isinstance(button, int) else "black"
+            
+            drawRect(x, app.force_down + y, 60, 30, fill = button_Color)
+            drawLabel(str(app.buttons[row][col]), x + 30, app.force_down + y + 15, fill = text_Color, size = 16)
+
+    if app.response != None:
+        
+        guestimated_average_character_width = 8 + (1/3) 
+        font_width = guestimated_average_character_width
+        response_length = len(app.response) * font_width
+        
+
+        true_x = app.col_width + app.col_width/4
+        print(app.scroll_x, response_length)
+
+        draw = True
+        if app.scroll_x < response_length:
+            true_x = true_x - app.scroll_x
+        elif app.scroll_x > response_length:
+            draw = False
+
+        if draw:
+            drawLabel(app.response, true_x, app.row_height*2 - app.row_height/8, size = 20, align = 'left')
+
+    drawLabel(app.equation, app.col_width + app.col_width/4, app.force_down + 100, size = 20, align = 'left')
+    response_mask(app)
+
+def response_mask(app):
+    # drawCircle(app.col_width, app.row_height*1.5, 5)  # uncomment these lines to get a clearer idea of
+    # drawCircle(app.col_width, app.row_height*2.6, 5)  # what the below code is doing
+    drawRect(app.col_width/2, (app.force_down+ app.row_height/2), app.col_width/2, app.row_height + app.row_height/8, fill = 'grey')
+    drawRect(app.col_width, (app.force_down+ app.row_height/2), 5, app.row_height + app.row_height/8)
+    drawRect(app.col_width/2, app.force_down+ app.row_height/2, 5, app.row_height + app.row_height/8)
+
+def draw_grid(app):
+    for x in app.rows:
+        drawLine(0, x, app.width, x, fill = 'blue', opacity = 50)
+    for y in app.cols:
+        drawLine(y, 0, y, app.height, fill = 'blue', opacity = 50)
+
+def fetch_response(app):
+    app.response = response(app.parts, app.answer, app.stress)
+    print(app.response)
 
 def onMousePress(app, mouseX, mouseY):
     button = getButton(app, mouseX, mouseY)
+    app.pressed_button = button                                                 # set app.pressed_button to the button (a string)
     if app.previousButton == '=':
         app.equation = ''
     if button == '<-' and app.previousTerm != None:
@@ -198,9 +294,22 @@ def onMousePress(app, mouseX, mouseY):
             app.previousTerm = app.previousTerm[1:]
         app.equation += app.previousTerm
     elif button == '=':
+        
         app.answer = calculate(app.equation)
         app.parts = getEquationParts(app.equation)
         app.equation = calculate(app.equation)
+        parts_for_dict = str(app.parts)
+        fetch_response(app)
+        
+
+        if parts_for_dict in app.equations:
+            equation_object = app.equations[parts_for_dict]
+            equation_object.frequency += 1
+
+        else:
+            app.equations[parts_for_dict] = Equation(app.parts)
+            app.stress += app.equations[parts_for_dict].stress
+
     elif button == 'clr':
         app.equation = ''
     else:
@@ -217,9 +326,30 @@ def onMousePress(app, mouseX, mouseY):
 def getButton(app, mX, mY):
     for i in range(len(app.buttonsPos)):
         x, y = app.buttonsPos[i]
+        y += app.force_down #dude why the fuck does this work so well
         if x <= mX <= x + 60 and y <= mY <= y + 30:
             return app.buttons[i // 4][i % 4]
     return ''
+
+def onMouseRelease(app, mX, mY):
+    app.pressed_button = None
+
+def onKeyPress(app, key):
+    if key == "g":
+        app.show_grid = not app.show_grid
+
+def onStep(app):
+    # print("call")
+    scroll_text(app)
+    if app.response != None:
+        scroll_text(app)
+
+def scroll_text(app):
+    app.scroll_steps += 1
+    if app.scroll_steps > 30 * 5: #step value times n seconds
+        if app.scroll_steps % 20 == 0:
+            app.scroll_x += app.scroll_x_increment
+            print(app.scroll_x)
 
 def main():
     test_equation()
