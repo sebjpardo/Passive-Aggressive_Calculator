@@ -167,6 +167,7 @@ def response(equation, answer, aggression):
         else:
             return "I'm so done."
     else: #piiiiiiissssssssed
+        app.background_color = "red"
         return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
 
 def onAppStart(app):
