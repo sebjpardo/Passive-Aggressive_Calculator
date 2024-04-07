@@ -138,7 +138,7 @@ def response(equation, answer, aggression):
         if op == "abs":
             return "It really isn't difficult to remove a minus sign."
         elif op == "+" or op == "-" or 1 in equation:
-            return "What is this? Kindergarden?"
+            return "What is this? Kindergarten?"
         elif equation[0] > 10**5:
             return "Pretty big numbers you got there."
         elif answer >= 10**5:
@@ -318,55 +318,55 @@ def fetch_response(app):
     print(app.response)
 
 def onMousePress(app, mouseX, mouseY):
-    button = getButton(app, mouseX, mouseY)
-    app.pressed_button = button                                                 # set app.pressed_button to the button (a string)
-    if app.previousButton == '=' or app.previousKey == '=' or app.previousKey == 'enter':
-        app.equation = ''
-    app.previousKey = None
-    if button == '':
-        return
-    if button == '<-' and app.previousTerm != None:
-        app.equation = app.equation[:-len(app.previousTerm)]
-    elif button == '+-':
-        app.equation = app.equation[:-len(app.previousTerm)]
-        if app.equation == '':
-            app.previousTerm = '-' + app.previousTerm
-        elif app.previousTerm[0] != '-':
-            app.previousTerm = '-' + app.previousTerm
-        else:
-            app.previousTerm = app.previousTerm[1:]
-        app.equation += app.previousTerm
-    elif button == '=':
-        if app.equation != '':
-            app.answer = calculate(app.equation)
-            app.parts = getEquationParts(app.equation)
-            app.equation = calculate(app.equation)
-            parts_for_dict = str(app.parts)
-            fetch_response(app)
+    if app.stress < 100:
+        button = getButton(app, mouseX, mouseY)
+        app.pressed_button = button                                                 # set app.pressed_button to the button (a string)
+        if app.previousButton == '=' or app.previousKey == '=' or app.previousKey == 'enter':
+            app.equation = ''
+        app.previousKey = None
+        if button == '':
+            return
+        if button == '<-' and app.previousTerm != None:
+            app.equation = app.equation[:-len(app.previousTerm)]
+        elif button == '+-':
+            app.equation = app.equation[:-len(app.previousTerm)]
+            if app.equation == '':
+                app.previousTerm = '-' + app.previousTerm
+            elif app.previousTerm[0] != '-':
+                app.previousTerm = '-' + app.previousTerm
+            else:
+                app.previousTerm = app.previousTerm[1:]
+                app.equation += app.previousTerm
+        elif button == '=':
+            if app.equation != '':
+                app.answer = calculate(app.equation)
+                app.parts = getEquationParts(app.equation)
+                app.equation = calculate(app.equation)
+                parts_for_dict = str(app.parts)
+                fetch_response(app)
         
 
-            if parts_for_dict in app.equations:
-                equation_object = app.equations[parts_for_dict]
-                equation_object.frequency += 1
+                if parts_for_dict in app.equations:
+                    equation_object = app.equations[parts_for_dict]
+                    equation_object.frequency += 1
 
+                else:
+                    app.equations[parts_for_dict] = Equation(app.parts)
+                    app.stress += app.equations[parts_for_dict].stress
+
+        elif button == 'clr':
+           app.equation = ''
+        else:
+            if not button.isdigit():
+                term = button.replace('^', '**')
             else:
-                app.equations[parts_for_dict] = Equation(app.parts)
-                app.stress += app.equations[parts_for_dict].stress
-
-    elif button == 'clr':
-        app.equation = ''
-    else:
-        if not button.isdigit():
-            term = button.replace('^', '**')
-        else:
-            term = button
-        app.equation = app.equation + term 
-        if term.isdigit() and (app.previousTerm.isdigit() or app.previousTerm == ''):
-            print('Hi')
-            app.previousTerm += term
-        else:
-            app.previousTerm = term
-    app.previousButton = button
+                term = button
+            app.equation = app.equation + term 
+            if term.isdigit() and (app.previousTerm.isdigit() or app.previousTerm == ''):
+                app.previousTerm += term
+            else:
+                app.previousTerm = term
+        app.previousButton = button
 
 def getButton(app, mX, mY):
     for i in range(len(app.buttonsPos)):
@@ -380,34 +380,35 @@ def onMouseRelease(app, mX, mY):
     app.pressed_button = None
 
 def onKeyPress(app, key):
-    if app.previousKey == '=' or app.previousKey == 'enter' or app.previousButton == '=':
-        app.equation = ''
-    app.previousButton = None
-    if key == "g":
-        app.show_grid = not app.show_grid
-    elif key == '=' or key == 'enter':
-        if app.equation != '':
-            app.answer = calculate(app.equation)
-            app.parts = getEquationParts(app.equation)
-            app.equation = calculate(app.equation)
-            parts_for_dict = str(app.parts)
-            fetch_response(app)
+    if app.stress < 100:
+        if app.previousKey == '=' or app.previousKey == 'enter' or app.previousButton == '=':
+            app.equation = ''
+        app.previousButton = None
+        if key == "g":
+            app.show_grid = not app.show_grid
+        elif key == '=' or key == 'enter':
+            if app.equation != '':
+                app.answer = calculate(app.equation)
+                app.parts = getEquationParts(app.equation)
+                app.equation = calculate(app.equation)
+                parts_for_dict = str(app.parts)
+                fetch_response(app)
         
 
-            if parts_for_dict in app.equations:
-                equation_object = app.equations[parts_for_dict]
-                equation_object.frequency += 1
+                if parts_for_dict in app.equations:
+                    equation_object = app.equations[parts_for_dict]
+                    equation_object.frequency += 1
 
-            else:
-                app.equations[parts_for_dict] = Equation(app.parts)
-                app.stress += app.equations[parts_for_dict].stress
-    elif key == 'backspace':
-        app.equation = app.equation[:-1]
-    elif key == 'space':
-        app.equation += ' '
-    else:
-        app.equation += key
-    app.previousKey = key
+                else:
+                    app.equations[parts_for_dict] = Equation(app.parts)
+                    app.stress += app.equations[parts_for_dict].stress
+        elif key == 'backspace':
+            app.equation = app.equation[:-1]
+        elif key == 'space':
+            app.equation += ' '
+        else:
+            app.equation += key
+        app.previousKey = key
 
 def onStep(app):
     # print("call")
