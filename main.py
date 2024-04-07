@@ -110,7 +110,7 @@ def response(equation, answer, aggression):
     elif aggression <= 80: #frustrated
         if op == "abs":
             return "It really isn't difficult to remove a minus sign."
-        elif op == "+" or opp == "-" or 1 in equation:
+        elif op == "+" or op == "-" or 1 in equation:
             return "What is this? Kindergarden?"
         elif equation[0] > 10**5:
             return "Pretty big numbers you got there."
@@ -151,6 +151,8 @@ def onAppStart(app):
             x = 50 + col * 80
             y = 150 + row * 40
             app.buttonsPos.append((x,y))
+    app.equation = ''
+    app.previousTerm = None
 
 def redrawAll(app):
     drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
@@ -172,7 +174,7 @@ def drawCalc(app):
 
 def onMousePress(app, mouseX, mouseY):
     button = getButton(app, mouseX, mouseY)
-    term = button
+    print(repr(button))
     if button == '<-' and previousTerm != None:
         app.equation = app.equation[:-len(previousTerm)]
     elif button == '+-':
@@ -181,11 +183,11 @@ def onMousePress(app, mouseX, mouseY):
             app.previousTerm = '-' + app.previousTerm
         else:
             app.previousTerm = app.previousTerm[1:]
-        app.equation += app.previousTerm
+        app.equation += app.previousTerm + ' '
         
     else:
-        term = button.replace('^', '**')
-        app.equation += term
+        term = button.replace('^', '**'
+        app.equation = app.equation + term + ' '
         app.previousTerm = term
     print(app.equation)
 
@@ -194,3 +196,5 @@ def getButton(app, mX, mY):
         x, y = app.buttonsPos[i]
         if x <= mX <= x + 60 and y <= mY <= y + 30:
             return app.buttons[i // 4][i % 4]
+    return ''
+runApp()
