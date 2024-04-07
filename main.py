@@ -317,8 +317,9 @@ def fetch_response(app):
 def onMousePress(app, mouseX, mouseY):
     button = getButton(app, mouseX, mouseY)
     app.pressed_button = button                                                 # set app.pressed_button to the button (a string)
-    if app.previousButton == '=':
+    if app.previousButton == '=' or app.previousKey == '=' or app.previousKey == 'enter':
         app.equation = ''
+    app.previousKey = None
     if button == '':
         return
     if button == '<-' and app.previousTerm != None:
@@ -376,8 +377,9 @@ def onMouseRelease(app, mX, mY):
     app.pressed_button = None
 
 def onKeyPress(app, key):
-    if app.previousKey == '=' or app.previousKey == 'enter':
+    if app.previousKey == '=' or app.previousKey == 'enter' or app.previousButton == '=':
         app.equation = ''
+    app.previousButton = None
     if key == "g":
         app.show_grid = not app.show_grid
     elif key == '=' or key == 'enter':
