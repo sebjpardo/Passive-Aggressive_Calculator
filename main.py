@@ -74,6 +74,10 @@ def getEquationParts(s):
 
 def evalEquation(L):
     print(L)
+    if len(L) == 1 and isinstance(L[0], int):
+        return L[0]
+    elif (len(L) != 3 and len(L) != 2) or not isinstance(L[0], int):
+        return "Error"
     length = len(L)
     int1 = L[0]
     operator = L[1]
@@ -182,7 +186,12 @@ def drawCalc(app):
             drawRect(x, y, 60, 30, fill = bColor)
             drawLabel(str(app.buttons[row][col]), x + 30, y + 15, fill = tColor, size = 16)
     drawLabel(app.equation, 295, 100, size = 16, align = 'right')
-    
+    drawCircle(30, 50, 20, fill = "white", border = "black", borderWidth = 5)
+    drawCircle(370, 50, 20, fill = "white", border = "black", borderWidth = 5)
+    drawCircle(30, 50, 10, fill = "black")
+    drawCircle(370, 50, 10, fill = "black")
+    drawArc(30, 50, 40, 40, 0, 180, fill = "grey", border = "black", borderWidth = 5)
+    drawArc(370, 50, 40, 40, 0, 180, fill = "grey", border = "black", borderWidth = 5)
 
 def onMousePress(app, mouseX, mouseY):
     button = getButton(app, mouseX, mouseY)
