@@ -148,7 +148,7 @@ def response(equation, answer, aggression):
         return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
 
 def regurgitate():
-    return "fuck off and die fuck off and die"
+    return "fuck off and die fuck off and die die die die die"
 
 def onAppStart(app):
     app.buttons = [
@@ -196,13 +196,11 @@ def za_griDIO(app):
     
     app.col_width = app.width/rows
     app.row_height = app.height/columns
-    print(app.col_width, app.row_height)
     app.force_down = app.row_height 
 
     app.cols = [app.col_width * i for i in range(columns)]
     app.rows = [app.row_height * i for i in range(rows)]
 
-    print(app.rows, app.cols)
 
 def scroll(app):
     app.scroll_steps = 0
@@ -268,6 +266,13 @@ def response_mask(app):
     drawRect(app.col_width/2, (app.force_down+ app.row_height/2), app.col_width/2, app.row_height + app.row_height/8, fill = 'grey')
     drawRect(app.col_width, (app.force_down+ app.row_height/2), 5, app.row_height + app.row_height/8)
     drawRect(app.col_width/2, app.force_down+ app.row_height/2, 5, app.row_height + app.row_height/8)
+    drawRect(app.col_width*7-5, (app.force_down+ app.row_height/2), app.col_width/2, app.row_height + app.row_height/8, fill = 'grey')
+    drawRect(app.col_width*7-5, app.force_down+ app.row_height/2, 5, app.row_height + app.row_height/8)
+    drawRect(app.col_width*7-5+app.col_width/2, app.force_down+ app.row_height/2, 5, app.row_height + app.row_height/8)
+
+    drawRect(app.col_width*7+app.col_width/2, app.force_down+ app.row_height/2, 25, app.row_height + app.row_height/8, fill = 'beige')
+    
+
 
 def draw_grid(app):
     for x in app.rows:
