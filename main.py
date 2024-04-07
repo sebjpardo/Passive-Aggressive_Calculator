@@ -115,7 +115,7 @@ def response(equation, answer, aggression):
     print(equation, answer, aggression)
     if aggression <= 20: #content
         if op == None or answer == None:
-            return "Maybe try an actual equation..."
+            return "Are you sure your equation was right?"
     elif aggression <= 40: #tolerant
         if op == "abs":
             return "You can just remove the minus sign."
