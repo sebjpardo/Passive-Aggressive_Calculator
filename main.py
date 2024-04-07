@@ -138,8 +138,8 @@ def response(equation, answer, aggression):
 
 def onAppStart(app):
     app.buttons = [
-        ["sin", "cos", "tan", "^"],
-        ["abs", "^2", "sqrt", "/"],
+        ["clr", "abs", "sqrt", "^"],
+        ["sin", "cos", "tan", "/"],
         ['7', '8', '9', "*"],
         ['4', '5', '6', "-"],
         ['1', '2', '3', "+"],
@@ -185,6 +185,8 @@ def onMousePress(app, mouseX, mouseY):
         app.equation += app.previousTerm
     elif button == '=':
         app.answer = calculate(app.equation)
+        app.equation = ''
+    elif button == 'clr':
         app.equation = ''
     else:
         if not button.isdigit():
