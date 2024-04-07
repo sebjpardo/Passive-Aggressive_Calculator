@@ -58,7 +58,7 @@ def getEquationParts(s):
             # Add to current operator
             currentOperator += char
 
-            if rest == '' or rest[0].isdigit() or rest[0].isspace():
+            if rest == '' or rest[0].isdigit() or rest[0].isspace() or rest[0] == '-':
                 # Add operator to result
                 parts.append(currentOperator)
                 previousTerm = currentOperator
@@ -69,17 +69,18 @@ def getEquationParts(s):
         s = rest
     if len(parts) == 2:
         parts = parts[::-1]
-    print(parts)
     return parts
 
 def evalEquation(L):
-    print(L)
     length = len(L)
     int1 = L[0]
-    operator = L[1]
+    if length >= 2:
+        operator = L[1]
     if length == 3:
         int2 = L[2]
-    if operator == '+':
+    if length == 1:
+        return int1
+    elif operator == '+':
         return int1 + int2
     elif operator == '-':
         return int1 - int2
@@ -103,7 +104,10 @@ def evalEquation(L):
         return abs(int1)
 
 def response(equation, answer, aggression):
-    op = equation[1]
+    if len(equation) > 1:
+        op = equation[1]
+    else:
+        op = None
     print(equation, answer, aggression)
     if aggression <= 20: #content
         return regurgitate()
@@ -111,6 +115,8 @@ def response(equation, answer, aggression):
     elif aggression <= 40: #tolerant
         if op == "abs":
             return "You can just remove the minus sign."
+        elif op == None:
+            return "Maybe try an actual equation..."
     elif aggression <= 60: #annoyed
         if op == "abs":
             return "Is it that difficult to remove a minus sign?"
@@ -118,6 +124,8 @@ def response(equation, answer, aggression):
             return "Feeling adeventurous today, are we?"
         elif answer >= 10**5:
             return "I'm not payed enough for this."
+        elif op == None:
+            return "Do you know how to use a calculator?"
     elif aggression <= 80: #frustrated
         if op == "abs":
             return "It really isn't difficult to remove a minus sign."
@@ -127,6 +135,8 @@ def response(equation, answer, aggression):
             return "Pretty big numbers you got there."
         elif answer >= 10**5:
             return "I'm not payed enough for this."
+        elif op == None:
+            return 'How hard is it to just type an equation!?'
     elif aggression <= 99: #almost breaking point
         if op == "abs":
             return "Do you know what absolute value means? It's easy. I frankly don't know why I need it as a button."
@@ -144,6 +154,8 @@ def response(equation, answer, aggression):
             return "I see someone forgot their times tables."
         elif answer >= 10**5:
             return "Just big and greedy..."
+        elif op == None:
+            return "Even a fucking kindergartener can use a calculator! WHy can't you?!?!"
     else: #piiiiiiissssssssed
         return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
 
@@ -167,7 +179,7 @@ def onAppStart(app):
             app.buttonsPos.append((x,y))
     app.pressed_button = None
     app.equation = ''
-    app.previousTerm = None
+    app.previousTerm = ''
     app.answer = None
     app.parts = []
     app.previousButton = None
@@ -215,6 +227,8 @@ def redrawAll(app):
     draw_background(app)
     drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
     drawCalc(app)
+    # A rectangle to block the text that goes off screen
+    drawRect(0, 0, 25, app.height, fill = app.background_color) 
     if app.show_grid:
         draw_grid(app)
 
@@ -284,43 +298,49 @@ def onMousePress(app, mouseX, mouseY):
     app.pressed_button = button                                                 # set app.pressed_button to the button (a string)
     if app.previousButton == '=':
         app.equation = ''
+    if button == '':
+        return
     if button == '<-' and app.previousTerm != None:
         app.equation = app.equation[:-len(app.previousTerm)]
     elif button == '+-':
         app.equation = app.equation[:-len(app.previousTerm)]
-        if app.previousTerm[0] != '-':
+        if app.equation == '':
+            app.previousTerm = '-' + app.previousTerm
+        elif app.previousTerm[0] != '-':
             app.previousTerm = '-' + app.previousTerm
         else:
             app.previousTerm = app.previousTerm[1:]
         app.equation += app.previousTerm
     elif button == '=':
-        
-        app.answer = calculate(app.equation)
-        app.parts = getEquationParts(app.equation)
-        app.equation = calculate(app.equation)
-        parts_for_dict = str(app.parts)
-        fetch_response(app)
+        if app.equation != '':
+            app.answer = calculate(app.equation)
+            app.parts = getEquationParts(app.equation)
+            app.equation = calculate(app.equation)
+            parts_for_dict = str(app.parts)
+            fetch_response(app)
         
 
-        if parts_for_dict in app.equations:
-            equation_object = app.equations[parts_for_dict]
-            equation_object.frequency += 1
+            if parts_for_dict in app.equations:
+                equation_object = app.equations[parts_for_dict]
+                equation_object.frequency += 1
 
-        else:
-            app.equations[parts_for_dict] = Equation(app.parts)
-            app.stress += app.equations[parts_for_dict].stress
+            else:
+                app.equations[parts_for_dict] = Equation(app.parts)
+                app.stress += app.equations[parts_for_dict].stress
 
     elif button == 'clr':
         app.equation = ''
     else:
         if not button.isdigit():
             term = button.replace('^', '**')
-            app.previousTerm += term
         else:
-            app.previousTerm = ''
             term = button
         app.equation = app.equation + term 
-        app.previousTerm = term
+        if term.isdigit() and (app.previousTerm.isdigit() or app.previousTerm == ''):
+            print('Hi')
+            app.previousTerm += term
+        else:
+            app.previousTerm = term
     app.previousButton = button
 
 def getButton(app, mX, mY):

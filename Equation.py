@@ -39,7 +39,10 @@ class Equation:
 
     #[**, sin, cos, tan, sqrt, abs]
     def get_stress(self, parts):
-        sign = parts[1] #always
+        if len(parts) > 1:
+            sign = parts[1] #always unless there's only one input
+        else:
+            sign = None
         sign_stress = get_sign_stress(sign)
         
         coeffs = []
@@ -47,6 +50,8 @@ class Equation:
             coeffs = [parts[0] + parts[2]]
         elif len(parts) == 2:
             coeffs = [parts[0]]
+        elif len(parts) == 1:
+            coeffs = [None]
             pass
 
         numbers_stress = 0
@@ -58,22 +63,23 @@ class Equation:
         return sign_stress + numbers_stress
 
 def get_coeff_stress(integer):
-    integer = int(integer)
     stressor = 0
     stressor_type = None
-    if abs(integer) < 10:
-        stressor += 5
-        stressor_type == 'a' # a: a 
-    elif 10 <= abs(integer) < 100:
-        stressor += 1
-        stressor_type == 'b'
-    elif 100 <= abs(integer) < 10**6:
-        stressor += 3
-        stressor_type == 'c'
-    elif 10**6 <= abs(integer):
-        abs_int = abs(integer)
-        stressor += 3 * math.log(math.log(abs_int))
-        stressor_type == 'd'
+    if integer != None:
+        integer = int(integer)
+        if abs(integer) < 10:
+            stressor += 5
+            stressor_type == 'a' # a: a 
+        elif 10 <= abs(integer) < 100:
+            stressor += 1
+            stressor_type == 'b'
+        elif 100 <= abs(integer) < 10**6:
+            stressor += 3
+            stressor_type == 'c'
+        elif 10**6 <= abs(integer):
+                abs_int = abs(integer)
+                stressor += 3 * math.log(math.log(abs_int))
+                stressor_type == 'd'
     return stressor, stressor_type
 
 def test_coeff_stress():
@@ -107,6 +113,8 @@ def get_sign_stress(sign):
         stressor += 8
     elif sign == "sqrt":
         stressor += 8
+    elif sign == None:
+        stressor += 9
     return stressor
 
 def test_Equation():
