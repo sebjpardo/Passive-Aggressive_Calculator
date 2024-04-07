@@ -140,10 +140,10 @@ def onAppStart(app):
     app.buttons = [
         ["sin", "cos", "tan", "^"],
         ["abs", "^2", "sqrt", "/"],
-        ['7', '8', '9', "*"],
-        ['4', '5', '6', "-"],
-        ['1', '2', '3', "+"],
-        ["<-", '0', "+-", "="]
+        [7, 8, 9, "*"],
+        [4, 5, 6, "-"],
+        [1, 2, 3, "+"],
+        ["<-", 0, "+-", "="]
         ]
     app.buttonsPos = []
     for row in range(len(app.buttons)):
@@ -153,7 +153,6 @@ def onAppStart(app):
             app.buttonsPos.append((x,y))
     app.equation = ''
     app.previousTerm = None
-    app.answer = None
 
 def redrawAll(app):
     drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
@@ -175,30 +174,25 @@ def drawCalc(app):
 
 def onMousePress(app, mouseX, mouseY):
     button = getButton(app, mouseX, mouseY)
-    if button == '<-' and app.previousTerm != None:
-        app.equation = app.equation[:-len(app.previousTerm)]
+    print(repr(button))
+    if button == '<-' and previousTerm != None:
+        app.equation = app.equation[:-len(previousTerm)]
     elif button == '+-':
-        app.equation = app.equation[:-len(app.previousTerm)]
+        app.equation = app.equation[:-len(previousTerm)]
         if app.previousTerm[0] != '-':
             app.previousTerm = '-' + app.previousTerm
         else:
             app.previousTerm = app.previousTerm[1:]
-        app.equation += app.previousTerm
-    elif button == '=':
-        app.answer = calculate(app.equation)
-        app.equation = ''
+        app.equation += app.previousTerm + ' '
+        
     else:
         if not button.isdigit():
-            term = button.replace('^', '**')
-            app.previousTerm += term
+            term = button.replace("^", "**")
         else:
-            app.previousTerm = ''
             term = button
-        app.equation = app.equation + term 
+        app.equation = app.equation + term + " "
         app.previousTerm = term
-    print(app.previousTerm)
     print(app.equation)
-    print(app.answer)
 
 def getButton(app, mX, mY):
     for i in range(len(app.buttonsPos)):
