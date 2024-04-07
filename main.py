@@ -58,7 +58,7 @@ def getEquationParts(s):
             # Add to current operator
             currentOperator += char
 
-            if rest == '' or rest[0].isdigit() or rest[0].isspace():
+            if rest == '' or rest[0].isdigit() or rest[0].isspace() or rest[0] == '-':
                 # Add operator to result
                 parts.append(currentOperator)
                 previousTerm = currentOperator
@@ -69,17 +69,20 @@ def getEquationParts(s):
         s = rest
     if len(parts) == 2:
         parts = parts[::-1]
-    print(parts)
     return parts
 
 def evalEquation(L):
-    print(L)
     length = len(L)
     int1 = L[0]
-    operator = L[1]
+    if not isinstance(int1, int):
+        return 0
+    if length >= 2:
+        operator = L[1]
     if length == 3:
         int2 = L[2]
-    if operator == '+':
+    if length == 1:
+        return int1
+    elif operator == '+':
         return int1 + int2
     elif operator == '-':
         return int1 - int2
@@ -101,16 +104,25 @@ def evalEquation(L):
         return math.tan(int1)
     elif operator.lower() == 'abs':
         return abs(int1)
+    else:
+        return None
 
 def response(equation, answer, aggression):
-    op = equation[1]
+    if len(equation) > 1:
+        op = equation[1]
+    else:
+        op = None
     print(equation, answer, aggression)
     if aggression <= 20: #content
-        return regurgitate()
-        return None
+        if op == None or answer == None:
+            return "Are you sure your equation was right?"
     elif aggression <= 40: #tolerant
         if op == "abs":
             return "You can just remove the minus sign."
+        elif op == None or answer == None:
+            return "Maybe try an actual equation..."
+        else:
+            "..."
     elif aggression <= 60: #annoyed
         if op == "abs":
             return "Is it that difficult to remove a minus sign?"
@@ -118,6 +130,10 @@ def response(equation, answer, aggression):
             return "Feeling adeventurous today, are we?"
         elif answer >= 10**5:
             return "I'm not payed enough for this."
+        elif op == None or answer == 'None':
+            return "Do you know how to use a calculator?"
+        else:
+            return "..."
     elif aggression <= 80: #frustrated
         if op == "abs":
             return "It really isn't difficult to remove a minus sign."
@@ -127,6 +143,9 @@ def response(equation, answer, aggression):
             return "Pretty big numbers you got there."
         elif answer >= 10**5:
             return "I'm not payed enough for this."
+        elif op == None or answer == None:
+            return 'How hard is it to just type an equation!?'
+        return "..."
     elif aggression <= 99: #almost breaking point
         if op == "abs":
             return "Do you know what absolute value means? It's easy. I frankly don't know why I need it as a button."
@@ -144,6 +163,10 @@ def response(equation, answer, aggression):
             return "I see someone forgot their times tables."
         elif answer >= 10**5:
             return "Just big and greedy..."
+        elif op == None or answer == 'None':
+            return "Even a fucking kindergartener can use a calculator! WHy can't you?!?!"
+        else:
+            return "I'm so done."
     else: #piiiiiiissssssssed
         return "That's it. I've tried everything. I see you don't value my time or my boundaries. I am sending a formal complaint to HR."
 
@@ -167,10 +190,11 @@ def onAppStart(app):
             app.buttonsPos.append((x,y))
     app.pressed_button = None
     app.equation = ''
-    app.previousTerm = None
+    app.previousTerm = ''
     app.answer = None
     app.parts = []
     app.previousButton = None
+    app.previousKey = None
     
     colors(app)
     za_griDIO(app)
@@ -213,8 +237,21 @@ def redrawAll(app):
     draw_background(app)
     drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
     drawCalc(app)
+    # A rectangle to block the text that goes off screen
+    drawRect(0, 0, 25, app.height, fill = app.background_color) 
     if app.show_grid:
         draw_grid(app)
+    if app.stress > 10:
+        drawEyes(app)
+    
+def drawEyes(app):
+    drawCircle(30, 80, 20, fill = "white", border = "black", borderWidth = 5)
+    drawCircle(370, 80, 20, fill = "white", border = "black", borderWidth = 5)
+    drawCircle(30, 80, 10, fill = "black")
+    drawCircle(370, 80, 10, fill = "black")
+    angle = app.stress / 4
+    drawArc(30, 80, 40, 40, 0 - angle, 180, fill = "grey", border = "black", borderWidth = 5)
+    drawArc(370, 80, 40, 40, 0 + angle, 180, fill = "grey", border = "black", borderWidth = 5)
 
 def draw_background(app):
     drawRect(0, 0, app.width, app.height, fill = app.background_color)
@@ -237,6 +274,7 @@ def drawCalc(app):
             
             drawRect(x, app.force_down + y, 60, 30, fill = button_Color)
             drawLabel(str(app.buttons[row][col]), x + 30, app.force_down + y + 15, fill = text_Color, size = 16)
+    
 
     if app.response != None:
         
@@ -287,45 +325,52 @@ def fetch_response(app):
 def onMousePress(app, mouseX, mouseY):
     button = getButton(app, mouseX, mouseY)
     app.pressed_button = button                                                 # set app.pressed_button to the button (a string)
-    if app.previousButton == '=':
+    if app.previousButton == '=' or app.previousKey == '=' or app.previousKey == 'enter':
         app.equation = ''
+    app.previousKey = None
+    if button == '':
+        return
     if button == '<-' and app.previousTerm != None:
         app.equation = app.equation[:-len(app.previousTerm)]
     elif button == '+-':
         app.equation = app.equation[:-len(app.previousTerm)]
-        if app.previousTerm[0] != '-':
+        if app.equation == '':
+            app.previousTerm = '-' + app.previousTerm
+        elif app.previousTerm[0] != '-':
             app.previousTerm = '-' + app.previousTerm
         else:
             app.previousTerm = app.previousTerm[1:]
         app.equation += app.previousTerm
     elif button == '=':
-        
-        app.answer = calculate(app.equation)
-        app.parts = getEquationParts(app.equation)
-        app.equation = calculate(app.equation)
-        parts_for_dict = str(app.parts)
-        fetch_response(app)
+        if app.equation != '':
+            app.answer = calculate(app.equation)
+            app.parts = getEquationParts(app.equation)
+            app.equation = calculate(app.equation)
+            parts_for_dict = str(app.parts)
+            fetch_response(app)
         
 
-        if parts_for_dict in app.equations:
-            equation_object = app.equations[parts_for_dict]
-            equation_object.frequency += 1
+            if parts_for_dict in app.equations:
+                equation_object = app.equations[parts_for_dict]
+                equation_object.frequency += 1
 
-        else:
-            app.equations[parts_for_dict] = Equation(app.parts)
-            app.stress += app.equations[parts_for_dict].stress
+            else:
+                app.equations[parts_for_dict] = Equation(app.parts)
+                app.stress += app.equations[parts_for_dict].stress
 
     elif button == 'clr':
         app.equation = ''
     else:
         if not button.isdigit():
             term = button.replace('^', '**')
-            app.previousTerm += term
         else:
-            app.previousTerm = ''
             term = button
         app.equation = app.equation + term 
-        app.previousTerm = term
+        if term.isdigit() and (app.previousTerm.isdigit() or app.previousTerm == ''):
+            print('Hi')
+            app.previousTerm += term
+        else:
+            app.previousTerm = term
     app.previousButton = button
 
 def getButton(app, mX, mY):
@@ -340,8 +385,34 @@ def onMouseRelease(app, mX, mY):
     app.pressed_button = None
 
 def onKeyPress(app, key):
+    if app.previousKey == '=' or app.previousKey == 'enter' or app.previousButton == '=':
+        app.equation = ''
+    app.previousButton = None
     if key == "g":
         app.show_grid = not app.show_grid
+    elif key == '=' or key == 'enter':
+        if app.equation != '':
+            app.answer = calculate(app.equation)
+            app.parts = getEquationParts(app.equation)
+            app.equation = calculate(app.equation)
+            parts_for_dict = str(app.parts)
+            fetch_response(app)
+        
+
+            if parts_for_dict in app.equations:
+                equation_object = app.equations[parts_for_dict]
+                equation_object.frequency += 1
+
+            else:
+                app.equations[parts_for_dict] = Equation(app.parts)
+                app.stress += app.equations[parts_for_dict].stress
+    elif key == 'backspace':
+        app.equation = app.equation[:-1]
+    elif key == 'space':
+        app.equation += ' '
+    else:
+        app.equation += key
+    app.previousKey = key
 
 def onStep(app):
     # print("call")
@@ -354,7 +425,8 @@ def scroll_text(app):
     if app.scroll_steps > 30 * 5: #step value times n seconds
         if app.scroll_steps % 20 == 0:
             app.scroll_x += app.scroll_x_increment
-            print(app.scroll_x)
+            if app.scroll_x > 200:
+                app.scroll_x = 0
 
 def main():
     test_equation()
