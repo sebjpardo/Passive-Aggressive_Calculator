@@ -75,20 +75,20 @@ def getEquationParts(s):
 def evalEquation(L):
     print(L)
     length = len(L)
+    int1 = L[0]
+    operator = L[1]
     if length == 3:
-        int1 = L[0]
-        operator = L[1]
         int2 = L[2]
-        if operator == '+':
-            return int1 + int2
-        elif operator == '-':
-            return int1 - int2
-        elif operator == '*' or operator == 'x' or operator == 'X':
-            return int1 * int2
-        elif operator == '/':
-            return int1 / int2
-        elif operator == '**' or operator == '^':
-            return int1 ** int2
+    if operator == '+':
+        return int1 + int2
+    elif operator == '-':
+        return int1 - int2
+    elif operator == '*' or operator == 'x' or operator == 'X':
+        return int1 * int2
+    elif operator == '/':
+        return int1 / int2
+    elif operator == '**' or operator == '^':
+        return int1 ** int2
     elif operator.lower() == 'sqrt':
         if int1 < 0:
            return None
@@ -161,9 +161,9 @@ def onAppStart(app):
             y = 150 + row * 40
             app.buttonsPos.append((x,y))
     app.equation = ''
-    app.previousTerm = None
+    app.previousTerm = ''
     app.parts = []
-    app.previousButton = None
+    app.previousButton = ''
 
 def redrawAll(app):
     drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
@@ -181,7 +181,7 @@ def drawCalc(app):
             tColor = "white" if isinstance(button, int) else "black"
             drawRect(x, y, 60, 30, fill = bColor)
             drawLabel(str(app.buttons[row][col]), x + 30, y + 15, fill = tColor, size = 16)
-    drawLabel(app.equation, 295, 100, size = 16, align = 'left')
+    drawLabel(app.equation, 295, 100, size = 16, align = 'right')
     
 
 def onMousePress(app, mouseX, mouseY):
