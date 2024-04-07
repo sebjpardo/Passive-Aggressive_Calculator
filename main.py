@@ -153,6 +153,8 @@ def onAppStart(app):
             app.buttonsPos.append((x,y))
     app.equation = ''
     app.previousTerm = None
+    app.parts = []
+    app.aggresionStuff = None
 
 def redrawAll(app):
     drawLabel("The Passive Agressive Calculator", 200, 25, size = 20)
@@ -185,6 +187,8 @@ def onMousePress(app, mouseX, mouseY):
         app.equation += app.previousTerm
     elif button == '=':
         app.answer = calculate(app.equation)
+        app.parts = getEquationParts(app.equation)
+        app.aggressionStuff = Equation(app.parts)
         app.equation = ''
     elif button == 'clr':
         app.equation = ''
@@ -197,7 +201,6 @@ def onMousePress(app, mouseX, mouseY):
             term = button
         app.equation = app.equation + term 
         app.previousTerm = term
-    print(app.equation)
 
 def getButton(app, mX, mY):
     for i in range(len(app.buttonsPos)):
