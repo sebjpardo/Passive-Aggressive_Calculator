@@ -75,20 +75,20 @@ def getEquationParts(s):
 def evalEquation(L):
     print(L)
     length = len(L)
+    int1 = L[0]
+    operator = L[1]
     if length == 3:
-        int1 = L[0]
-        operator = L[1]
         int2 = L[2]
-        if operator == '+':
-            return int1 + int2
-        elif operator == '-':
-            return int1 - int2
-        elif operator == '*' or operator == 'x' or operator == 'X':
-            return int1 * int2
-        elif operator == '/':
-            return int1 / int2
-        elif operator == '**' or operator == '^':
-            return int1 ** int2
+    if operator == '+':
+        return int1 + int2
+    elif operator == '-':
+        return int1 - int2
+    elif operator == '*' or operator == 'x' or operator == 'X':
+        return int1 * int2
+    elif operator == '/':
+        return int1 / int2
+    elif operator == '**' or operator == '^':
+        return int1 ** int2
     elif operator.lower() == 'sqrt':
         if int1 < 0:
            return None
